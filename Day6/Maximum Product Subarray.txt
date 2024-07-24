@@ -1,0 +1,65 @@
+https://leetcode.com/problems/maximum-product-subarray/
+
+class Solution {
+public:
+    long long solveUsingRec(vector<int>& nums, int s, int e) {
+        if (s == e) {
+          return nums[s]; 
+        }
+
+        int mid = s + (e - s) / 2;
+        long long maxLeftProd = solveUsingRec(nums, s, mid);
+        long long maxRightProd = solveUsingRec(nums, mid + 1, e);
+
+        long long leftProd = 1, maxLeftCrossProd = LLONG_MIN, minLeftCrossProd = LLONG_MAX;
+         for (int i = mid; i >= s; i--) {
+            leftProd *= nums[i];
+            maxLeftCrossProd = max(maxLeftCrossProd, leftProd);
+            minLeftCrossProd = min(minLeftCrossProd, leftProd);
+        }
+
+        long long rightProd = 1, maxRightCrossProd = LLONG_MIN, minRightCrossProd = LLONG_MAX;
+        for (int i = mid + 1; i <= e; i++) {
+           rightProd *= nums[i];
+           maxRightCrossProd = max(maxRightCrossProd, rightProd);
+           minRightCrossProd = min(minRightCrossProd, rightProd);
+        }
+
+       long long crossProd = max(maxLeftCrossProd * maxRightCrossProd, minLeftCrossProd * minRightCrossProd);
+
+       return max(maxLeftProd, max(maxRightProd, crossProd));
+    }
+    long long solveUsingMemo(vector<int>& nums, int s, int e, vector<int>&dp) {
+        if (s == e) {
+          return nums[s]; 
+        }
+        if(dp[0][0] != -1) {
+            return dp[0][0];
+        }
+        int mid = s + (e - s) / 2;
+        long long maxLeftProd = solveUsingRec(nums, s, mid);
+        long long maxRightProd = solveUsingRec(nums, mid + 1, e);
+
+        long long leftProd = 1, maxLeftCrossProd = LLONG_MIN, minLeftCrossProd = LLONG_MAX;
+         for (int i = mid; i >= s; i--) {
+            leftProd *= nums[i];
+            maxLeftCrossProd = max(maxLeftCrossProd, leftProd);
+            minLeftCrossProd = min(minLeftCrossProd, leftProd);
+        }
+
+        long long rightProd = 1, maxRightCrossProd = LLONG_MIN, minRightCrossProd = LLONG_MAX;
+        for (int i = mid + 1; i <= e; i++) {
+           rightProd *= nums[i];
+           maxRightCrossProd = max(maxRightCrossProd, rightProd);
+           minRightCrossProd = min(minRightCrossProd, rightProd);
+        }
+
+       long long crossProd = max(maxLeftCrossProd * maxRightCrossProd, minLeftCrossProd * minRightCrossProd);
+       dp[0][0] = crossProd
+       return max(maxLeftProd, max(maxRightProd, crossProd));
+    }
+
+    int maxProduct(vector<int>& nums) {
+       return static_cast<int>(solveUsingRec(nums, 0, nums.size() - 1));
+    }
+};
